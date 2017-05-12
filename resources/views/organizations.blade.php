@@ -64,7 +64,11 @@
                             <tr >
                                 <td ><a href="/response/{{ $org->code }}" target="_blank" >{{ str_limit($org->name, 30) }}</a></td>
                                 <td>{{ @$org->response }}</td>
-                                <td style="{{ (\Carbon\Carbon::parse($org->action_date)->gt(\Carbon\Carbon::now()) && \Carbon\Carbon::parse($org->action_date)->lte(\Carbon\Carbon::now()->addDays(7))?"color:green":"") }}">{!!  (\Carbon\Carbon::parse($org->action_date)->gt(\Carbon\Carbon::now()) && \Carbon\Carbon::parse($org->action_date)->lte(\Carbon\Carbon::now()->addDays(7))?"<B>".\Carbon\Carbon::parse($org->action_date)->format('M d, Y')."</b>":\Carbon\Carbon::parse($org->action_date)->format('M d, Y'))  !!}</td>
+                                <td style="{{ (\Carbon\Carbon::parse($org->action_date)->gt(\Carbon\Carbon::now()) && \Carbon\Carbon::parse($org->action_date)->lte(\Carbon\Carbon::now()->addDays(7))?"color:green":"") }}">
+@if($org->responder)
+                                  {!!  (\Carbon\Carbon::parse($org->action_date)->gt(\Carbon\Carbon::now()) && \Carbon\Carbon::parse($org->action_date)->lte(\Carbon\Carbon::now()->addDays(7))?"<B>".\Carbon\Carbon::parse($org->action_date)->format('M d, Y')."</b>":\Carbon\Carbon::parse($org->action_date)->format('M d, Y'))  !!}
+@endif
+                                </td>
                                 <td>{{ @$org->responder }}</td>
                                 <td>{{ str_limit($org->comment, 20) }}</td>
                                 <td>
