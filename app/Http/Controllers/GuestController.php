@@ -108,6 +108,9 @@ class GuestController extends Controller
        // print_r($date);
         $upcoming=\App\Organization::where([['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',false]]);
        // print_r($upcoming->toSql());
+        $upcoming=\App\Organization::where([['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date]]);
+print_r($upcoming->get());
+        die('femi');
         foreach($upcoming->get() as $org) {
             updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Tanys
             $org->assigned=true;
