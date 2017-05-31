@@ -88,7 +88,7 @@ class GuestController extends Controller
             if($action_date->lte(\Carbon\Carbon::now()->addDays(7))) {
                 if($org->action==1 || $org->action==2) {
 
-                    updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Tanys
+                    updateTicket($org->ticket_id, ['responder_id' => 1002426019]);//assign to Tanys
                 }
                 if($org->action==3) {
                     //updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Garry
@@ -106,13 +106,12 @@ class GuestController extends Controller
     public function upcoming() {
         $date=\Carbon\Carbon::now()->addDays(7);
        // print_r($date);
-        $upcoming=\App\Organization::where([['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',false]]);
+        $upcoming=\App\Organization::where([['action','=',1],['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',true]]);
        // print_r($upcoming->toSql());
-        $upcoming=\App\Organization::where([['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date]]);
-print_r($upcoming->get());
-        die('femi');
+       // $upcoming=\App\Organization::where([['action','=',1],['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date]]);
+
         foreach($upcoming->get() as $org) {
-            updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Tanys
+            updateTicket($org->ticket_id, ['responder_id' => 1002426019]);//assign to Tanys
             $org->assigned=true;
             $org->save();
 
