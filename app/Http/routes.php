@@ -24,6 +24,9 @@ Route::get('/home', 'HomeController@index');
 Route::get('/send', 'HomeController@send');
 Route::post('/send', 'HomeController@doSend')->name('send');;
 Route::get('/response/{org}', 'GuestController@respond')->name('respond');
+
+Route::get('/upcoming', 'GuestController@upcoming')->name('inaweek');
+
 Route::post('/response/{org}', 'GuestController@responded')->name('respond.save');
 Route::get('/organizations', 'HomeController@organizations')->name('organizations');
 Route::get('/organizations/{id}/process', 'HomeController@process')->name('process');

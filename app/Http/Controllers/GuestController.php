@@ -78,13 +78,14 @@ class GuestController extends Controller
                   'cc' => $cc,
                   'responder'=>$responder,
                   'action'=>$action,
+                  'comment'=>empty($org->comment)?"None":$org->comment,
                   'date' =>$action_date->format('m/d/Y')
               ]);
             //Charlie =1002201053
             //Tanys = 1002426019
             //Gary = 1002290368
             //META = 1002426232
-            if($action_date->lt(\Carbon\Carbon::now()->addDays(7))) {
+            if($action_date->lte(\Carbon\Carbon::now()->addDays(7))) {
                 if($org->action==1 || $org->action==2) {
 
                     updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Tanys
@@ -101,6 +102,19 @@ class GuestController extends Controller
             ->withError('Unable to save response. Please try again.')
             ->withInput();
 
+    }
+    public function upcoming() {
+        $date=\Carbon\Carbon::now()->addDays(7);
+       // print_r($date);
+        $upcoming=\App\Organization::where([['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',false]]);
+       // print_r($upcoming->toSql());
+        foreach($upcoming->get() as $org) {
+            updateTicket($org->ticket_id, ['responder_id' => 1002426232]);//assign to Tanys
+            $org->assigned=true;
+            $org->save();
+
+        }
+        return $upcoming->count();
     }
 
 }

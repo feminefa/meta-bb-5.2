@@ -73,6 +73,7 @@ function replyTicket($ticket_id, $from_email, $message, $data) {
     // $subject=str_replace("[org]", $org, $_POST['subject']);
     $message=str_replace("[org]", @$data['org'], $message);
     $message=str_replace("[org_id]", @$data['org_id'], $message);
+    $message=str_replace("[comment]", @$data['comment'], $message);
 
     $message=str_replace("'", "\u0027", $message);
     // $subject=str_replace("'", "\u0027", $subject);
@@ -227,6 +228,7 @@ Support and resources are available for Mizzou\'s migration to Canvas at <a href
 <br>
 <p>This is scheduled for [date].</p>
 <div>Responder: [responder]</div>
+<div>Comment: [comment]</div>
 <div>&nbsp;</div>
 <p>Do not hesitate contacting us for further help.</p>
 <div>&nbsp;</div>
