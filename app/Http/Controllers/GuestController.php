@@ -106,7 +106,7 @@ class GuestController extends Controller
     public function upcoming() {
         $date=\Carbon\Carbon::now()->addDays(7);
        // print_r($date);
-        $upcoming=\App\Organization::where([['action','=',1],['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',true]]);
+        $upcoming=\App\Organization::where([['action','=',1],['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date],['assigned','=',false]]);
        // print_r($upcoming->toSql());
        // $upcoming=\App\Organization::where([['action','=',1],['responder','!=',null],['action_date', '>', '2017-05-19'], ['action_date', '<', $date]]);
 
