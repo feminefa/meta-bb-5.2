@@ -172,55 +172,80 @@ class HomeController extends Controller
             $orgs = $orgs = \App\Organization::where([['id', '=', 0]]);
             $filters = session('filters');
 
+
+
             // echo \Carbon\Carbon::now()->addDays(7)->toDateString();
+            $fields=[];
             foreach ($filters as $k => $filter) {
-                if ($k == 'migrate') $orgs->orWhere(function ($q) use ($filters) {
-                    $q->where(['action' => 1]);
-                    if (isset($filters['this_week'])) {
-                        $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
-                    }
-                });
-                if ($k == 'backup') $orgs->orWhere(function ($q) use ($filters) {
-                    $q->where(['action' => 2]);
-                    if (isset($filters['this_week'])) {
-                        $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
-                    }
-                });
-                if ($k == 'delete') $orgs->orWhere(function ($q) use ($filters) {
-                    $q->where(['action' => 3]);
-                    if (isset($filters['this_week'])) {
-                        $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
-                    }
-                });
-                if ($k == 'responded') $orgs->orWhere(function ($q) use ($filters) {
+                $fields[]=$k;
+                if(!array_key_exists('not_responded', $filters)) {
+                    if ($k == 'migrate') $orgs->orWhere(function ($q) use ($filters) {
+                        $q->where(['action' => 1]);
+                        if (isset($filters['this_week'])) {
+                            // $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
+                        }
+                        if (!array_key_exists('processed', $filters)) {
+
+                            //$q->where('status', '!=', 'processed');
+                        }
+                    });
+                    if ($k == 'backup') $orgs->orWhere(function ($q) use ($filters) {
+                        $q->where(['action' => 2]);
+                        if (isset($filters['this_week'])) {
+                            $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
+                        }
+                        if (!array_key_exists('processed', $filters)) {
+
+                            //$q->where('status', '!=', 'processed');
+                        }
+                    });
+
+                    if ($k == 'delete') $orgs->orWhere(function ($q) use ($filters) {
+                        $q->where(['action' => 3]);
+                        if (isset($filters['this_week'])) {
+                            $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
+                        }
+                        if (!array_key_exists('processed', $filters)) {
+
+                            $q->where('status', '!=', 'processed');
+                        }
+
+                    });
+                }
+                if ($k == 'responded') $orgs->where(function ($q) use ($filters) {
                     $q->where([['action', '!=', null]]);
                     if (isset($filters['this_week'])) {
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
                 });
-                if ($k == 'not_responded') $orgs->orWhere(function ($q) use ($filters) {
+                if ($k == 'not_responded') $orgs->where(function ($q) use ($filters) {
                     $q->where([['action', '=', null]]);
                     if (isset($filters['this_week'])) {
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
                 });
-                if ($k == 'processed') $orgs->orWhere(function ($q) use ($filters) {
-                    $q->where([['status', '=', 'processed']]);
+                if ($k == 'processed' || ($k == 'not_processed'))  $orgs->where(function ($q) use ($filters, $k) {
+                   if($k == 'processed') $q->where([['status', '=', 'processed']]);
+                    else   $q->where([['status', '<>', 'processed']]);
                     if (isset($filters['this_week'])) {
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
                 });
-                if ($k == 'not_processed') $orgs->orWhere(function ($q) use ($filters) {
+/*
+                if  $orgs->where(function ($q) use ($filters) {
                     $q->where([['status', '<>', 'processed']]);
                     if (isset($filters['this_week'])) {
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
-                });
+                });*/
 
                 //   if($k=='this_week') $orgs->orWhere([['action_date','>',\Carbon\Carbon::now()->toDateString()], ['action_date','>',\Carbon\Carbon::now()->addDays(7)->toDateString()]]);
             }
 
+
+
         }
+      //  print_r($orgs->toSql());
         $count=$orgs->count();
         $result=$orgs->paginate(40);
         return view('organizations', ['orgs'=>$result, 'count'=>$count]);
@@ -233,5 +258,12 @@ class HomeController extends Controller
         updateTicket($obj->ticket_id, ['status' => 5]);//close the ticket
 
         return back()->withSuccess('Organization status updated');
+    }
+    public function delete(Request $request, $id) {
+        $obj=\App\Organization::find($id);
+        $obj->delete();
+
+
+        return back()->withSuccess('Organization '.$obj->name.' deleted');
     }
 }

@@ -21,13 +21,13 @@
                 <div>
                     <form role="form" method="GET" action="{{ route('organizations') }}">
                         {{ csrf_field() }}
-                        <input type="checkbox" > TOGGLE SELECTION
+                        <input type="checkbox" id="tg" class="toggle-cb" > <label for="tg"> Check all</label>
                         <hr style="margin:4px">
                         @foreach(filters() as $key=>$filter)
-                            <div class="form-group">
-                                <label  for="filter-{{ $key }}">
-                                    <input class="check-box" value="1" {{ isset(session('filters')[$key])?"checked":"" }} type="checkbox" name="filters[{{ $key }}]"  id="filter-{{ $key }}"> {{ $filter }}</label>
-
+                            <div class="form-group"></label>
+                                <label  for="filter-{{ $key }}" style="font-weight: normal; width: 100%">
+                                    <input style="float:right" class="check-box filter-cb" value="1" {{ isset(session('filters')[$key])?"checked":"" }} type="checkbox" name="filters[{{ $key }}]"  id="filter-{{ $key }}"> {{ $filter }}
+                                </label>
                             </div>
                             @endforeach
                         <button type="submit" class="btn btn-default">Apply Filter</button>
@@ -62,7 +62,8 @@
                             <tbody>
                             @foreach($orgs as $org)
                             <tr >
-                                <td ><a href="/response/{{ $org->code }}" target="_blank" >{{ str_limit($org->name, 30) }}</a></td>
+                                <td ><a href="/response/{{ $org->code }}" target="_blank" >{{ str_limit($org->name, 30) }}</a>
+                                <br><a class="delete" href="javascript://" data-id="{{ $org->id }}" style="color:red; font-size:10px">remove</a> </td>
                                 <td>{{ @$org->response }}</td>
                                 <td style="{{ (\Carbon\Carbon::parse($org->action_date)->gt(\Carbon\Carbon::now()) && \Carbon\Carbon::parse($org->action_date)->lte(\Carbon\Carbon::now()->addDays(7))?"color:green":"") }}">
 @if($org->responder)
@@ -88,4 +89,21 @@
         </div>
     </div>
 </div>
+    <script>
+        $(document).ready(function() {
+            $('.toggle-cb').click(function() {
+
+                $('.filter-cb').each(function() {
+                   // console.log('femi')
+                  //  if($(this).checked)
+                    $(this).prop('checked', $('.toggle-cb').prop('checked'))
+                })
+            })
+        })
+        $('.delete').click(function() {
+            if(confirm("Are you sure you want to delete this organization?")) {
+                window.location.href='/organizations/'+$(this).data('id')+'/delete'
+            }
+        })
+    </script>
 @endsection

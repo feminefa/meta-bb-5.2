@@ -30,5 +30,7 @@ Route::get('/upcoming', 'GuestController@upcoming')->name('inaweek');
 Route::post('/response/{org}', 'GuestController@responded')->name('respond.save');
 Route::get('/organizations', 'HomeController@organizations')->name('organizations');
 Route::get('/organizations/{id}/process', 'HomeController@process')->name('process');
+
+Route::get('/organizations/{id}/delete', 'HomeController@delete')->name('delete');
 Route::auth();
 

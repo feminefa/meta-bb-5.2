@@ -146,7 +146,7 @@ function updateTicket($ticket_id, $params=[]) {
 
 function filters() {
     return [
-        'responded' => 'Responded',
+      //  'responded' => 'Responded',
         'migrate' => 'Migrate',
         'backup' => 'Backup+Delete',
         'delete' => 'Delete entire site',
@@ -155,7 +155,7 @@ function filters() {
         'not_responded' => 'Not responded',
 
         'processed'=>'Processed',
-        'not_processed'=>'Not Processed',
+        //'not_processed'=>'Not Processed',
     ];
 }
 function getSubject($index="") {
