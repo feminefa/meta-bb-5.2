@@ -152,7 +152,7 @@ function filters() {
         'delete' => 'Delete entire site',
         'this_week' => 'Act within a week',
 
-        'not_responded' => 'Not responded',
+      //  'not_responded' => 'Not responded',
 
         'processed'=>'Processed',
         //'not_processed'=>'Not Processed',

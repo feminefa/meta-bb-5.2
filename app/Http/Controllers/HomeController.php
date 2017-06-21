@@ -164,12 +164,15 @@ class HomeController extends Controller
             if (isset($_GET['filters'])) {
 
                 session(['filters' => $_GET['filters']]);
+
+                $orgs = $orgs = \App\Organization::where([['id', '=', 0]]);
             } else {
                 $arr = filters();
                 unset($arr['this_week']);
-                session(['filters' => $arr]);
+                session(['filters' => []]);
+                $orgs = $orgs = \App\Organization::where([['id', '!=', 0]]);
             }
-            $orgs = $orgs = \App\Organization::where([['id', '=', 0]]);
+
             $filters = session('filters');
 
 
@@ -218,19 +221,25 @@ class HomeController extends Controller
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
                 });
-                if ($k == 'not_responded') $orgs->where(function ($q) use ($filters) {
+               /* if ($k == 'not_responded') $orgs->where(function ($q) use ($filters) {
                     $q->where([['action', '=', null]]);
                     if (isset($filters['this_week'])) {
                         $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
                     }
-                });
-                if ($k == 'processed' || ($k == 'not_processed'))  $orgs->where(function ($q) use ($filters, $k) {
-                   if($k == 'processed') $q->where([['status', '=', 'processed']]);
-                    else   $q->where([['status', '<>', 'processed']]);
-                    if (isset($filters['this_week'])) {
-                        $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
-                    }
-                });
+                });*/
+                if ($k == 'processed' || ($k == 'not_processed'))  {
+                    $cb=function ($q) use ($filters, $k) {
+                        if($k == 'processed') $q->where([['status', '=', 'processed']]);
+                        else   $q->where([['status', '<>', 'processed']]);
+                        if (isset($filters['this_week'])) {
+                            $q->where([['action_date', '>', \Carbon\Carbon::now()->toDateString()], ['action_date', '<', \Carbon\Carbon::now()->addDays(7)->toDateString()]]);
+                        }
+                    };
+                    if(!array_key_exists('migrate', $filters) && !array_key_exists('delete', $filters) && !array_key_exists('backup', $filters)) {
+                        $orgs->orWhere($cb);
+                    }else  $orgs->where($cb);
+
+                }
 /*
                 if  $orgs->where(function ($q) use ($filters) {
                     $q->where([['status', '<>', 'processed']]);
@@ -245,7 +254,7 @@ class HomeController extends Controller
 
 
         }
-      //  print_r($orgs->toSql());
+        //print_r($orgs->toSql());
         $count=$orgs->count();
         $result=$orgs->paginate(40);
         return view('organizations', ['orgs'=>$result, 'count'=>$count]);
